@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Yaroshinski.Blog.Api.Models;
 using Yaroshinski.Blog.Api.Filters;
-using Yaroshinski.Blog.Api.Services;
+using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Api.Controllers
@@ -172,8 +172,8 @@ namespace Yaroshinski.Blog.Api.Controllers
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))
                 return Request.Headers["X-Forwarded-For"];
-            else
-                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
+            
+            return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
     }
 }

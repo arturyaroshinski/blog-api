@@ -1,4 +1,4 @@
-﻿namespace Yaroshinski.Blog.Api
+﻿namespace Yaroshinski.Blog.Infrastructure.Services.Configuration
 {
     public class AppSettings
     {

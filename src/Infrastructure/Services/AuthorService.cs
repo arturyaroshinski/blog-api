@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using BC = BCrypt.Net.BCrypt;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
+﻿using BC = BCrypt.Net.BCrypt;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,34 +6,19 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Yaroshinski.Blog.Api.Models;
 using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Domain.Entities;
 using Yaroshinski.Blog.Domain.Exceptions;
 using Yaroshinski.Blog.Infrastructure.Persistence;
+using Yaroshinski.Blog.Infrastructure.Services.Configuration;
 
-namespace Yaroshinski.Blog.Api.Services
+namespace Yaroshinski.Blog.Infrastructure.Services
 {
-    // TODO: move to application
-    public interface IAuthorService
-    {
-        AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress);
-        AuthenticateResponse RefreshToken(string token, string ipAddress);
-        void RevokeToken(string token, string ipAddress);
-        void Register(RegisterRequest model, string origin);
-        void VerifyEmail(string token);
-        void ForgotPassword(ForgotPasswordRequest model, string origin);
-        void ValidateResetToken(ValidateResetTokenRequest model);
-
-        void ResetPassword(ResetPasswordRequest model);
-        List<AuthorDto> GetAll();
-        AuthorResponse GetById(int id);
-        AuthorResponse Create(CreateAuthorRequest model);
-        AuthorResponse Update(int id, UpdateAuthorRequest model);
-        void Delete(int id);
-    }
-
     public class AuthorService : IAuthorService
     {
         private readonly ApplicationDbContext _context;

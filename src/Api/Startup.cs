@@ -4,11 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using Yaroshinski.Blog.Api.Middleware;
-using Yaroshinski.Blog.Api.Services;
 using Yaroshinski.Blog.Application;
-using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Infrastructure;
-using IAuthorService = Yaroshinski.Blog.Api.Services.IAuthorService;
+using Yaroshinski.Blog.Infrastructure.Services.Configuration;
 
 namespace Yaroshinski.Blog.Api
 {
@@ -25,49 +23,9 @@ namespace Yaroshinski.Blog.Api
         {
             services.AddApplication();
             services.AddInfrastructure(Configuration);
-
-            // TODO: move to api di.cs
-            services.AddCors();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Blog api", Version = "v1"
-                });
-
-                var securityDefinition = new OpenApiSecurityScheme
-                {
-                    Name = "Bearer",
-                    BearerFormat = "JWT",
-                    Scheme = "bearer",
-                    Description = "Specify the authorization token.",
-                    In = ParameterLocation.Header,
-                    Type = SecuritySchemeType.Http,
-                };
-                c.AddSecurityDefinition("jwt_auth", securityDefinition);
-
-                var securityScheme = new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference()
-                    {
-                        Id = "jwt_auth",
-                        Type = ReferenceType.SecurityScheme
-                    }
-                };
-                var securityRequirements = new OpenApiSecurityRequirement()
-                {
-                    {securityScheme, new string[] { }},
-                };
-                c.AddSecurityRequirement(securityRequirements);
-            });
-
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
-            services.AddRouting(options => options.LowercaseUrls = true);
+            services.AddApi();
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
-            services.AddScoped<IAuthorService, AuthorService>();
-            services.AddScoped<IEmailService, EmailService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -4,8 +4,9 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using Yaroshinski.Blog.Application.Interfaces;
+using Yaroshinski.Blog.Infrastructure.Services.Configuration;
 
-namespace Yaroshinski.Blog.Api.Services
+namespace Yaroshinski.Blog.Infrastructure.Services
 {
     public class EmailService : IEmailService
     {

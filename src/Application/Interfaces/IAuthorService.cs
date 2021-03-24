@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Yaroshinski.Blog.Api.Models;
 using Yaroshinski.Blog.Application.DTO;
 
 namespace Yaroshinski.Blog.Application.Interfaces
@@ -17,7 +18,7 @@ namespace Yaroshinski.Blog.Application.Interfaces
         List<AuthorDto> GetAll();
         AuthorResponse GetById(int id);
         AuthorResponse Create(CreateAuthorRequest model);
-        AuthorResponse Update(int id, UpdateRequest model);
+        AuthorResponse Update(int id, UpdateAuthorRequest model);
         void Delete(int id);
     }
 }
