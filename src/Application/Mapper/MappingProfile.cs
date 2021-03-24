@@ -9,6 +9,7 @@ namespace Yaroshinski.Blog.Application.Mapper
         public MappingProfile()
         {
             CreateMap<Author, AuthorDto>().ReverseMap();
+            CreateMap<RefreshToken, RefreshTokenDto>().ReverseMap();
             CreateMap<Post, PostDto>().ReverseMap();
             CreateMap<Comment, CommentDto>().ReverseMap();
             CreateMap<Tag, TagDto>().ReverseMap();

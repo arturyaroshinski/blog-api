@@ -10,7 +10,7 @@ using Yaroshinski.Blog.Infrastructure.Persistence;
 namespace Yaroshinski.Blog.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210315114658_Init")]
+    [Migration("20210324141306_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,14 +37,41 @@ namespace Yaroshinski.Blog.Infrastructure.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PasswordReset")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResetTokenExpires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Verified")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -123,6 +150,44 @@ namespace Yaroshinski.Blog.Infrastructure.Migrations
                     b.ToTable("PostTags");
                 });
 
+            modelBuilder.Entity("Yaroshinski.Blog.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AuthorId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReplacedByToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedByIp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("Yaroshinski.Blog.Domain.Entities.Tag", b =>
                 {
                     b.Property<int>("Id")
@@ -187,11 +252,22 @@ namespace Yaroshinski.Blog.Infrastructure.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("Yaroshinski.Blog.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("Yaroshinski.Blog.Domain.Entities.Author", "Author")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("AuthorId");
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Yaroshinski.Blog.Domain.Entities.Author", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("Posts");
+
+                    b.Navigation("RefreshTokens");
                 });
 
             modelBuilder.Entity("Yaroshinski.Blog.Domain.Entities.Post", b =>

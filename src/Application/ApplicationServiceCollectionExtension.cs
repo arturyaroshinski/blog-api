@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using System;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
-using Yaroshinski.Blog.Application.Mapper;
 
 namespace Yaroshinski.Blog.Application
 {
@@ -10,15 +7,7 @@ namespace Yaroshinski.Blog.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
-
-            var mapperConfig = new MapperConfiguration(mc => {
-                mc.AddProfile(new MappingProfile());
-            });
-
-            var mapper = mapperConfig.CreateMapper();
-            services.AddSingleton(mapper);
-
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;
         }
     }

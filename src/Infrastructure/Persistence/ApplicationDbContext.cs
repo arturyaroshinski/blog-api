@@ -8,7 +8,10 @@ namespace Yaroshinski.Blog.Infrastructure.Persistence
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         public DbSet<Author> Authors { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
+        
         public DbSet<Comment> Comments { get; set; }
+
         public DbSet<Post> Posts { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<PostTag> PostTags { get; set; }

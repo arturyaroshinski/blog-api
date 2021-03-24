@@ -22,9 +22,12 @@ namespace Yaroshinski.Blog.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
-            var query = new GetAuthorByIdQuery() { Id = id };
+            var query = new GetAuthorByIdQuery
+            {
+                Id = id
+            };
+            
             var response = await _mediator.Send(query);
-
             return Ok(response);
         }
 

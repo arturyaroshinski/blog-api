@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
 using Yaroshinski.Blog.Domain.Entities;
@@ -18,5 +19,7 @@ namespace Yaroshinski.Blog.Application.Interfaces
         DbSet<Comment> Comments { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+        int SaveChanges();
     }
 }
