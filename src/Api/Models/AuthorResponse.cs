@@ -2,7 +2,7 @@
 
 namespace Yaroshinski.Blog.Api.Models
 {
-    public class AccountResponse
+    public class AuthorResponse
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

@@ -3,7 +3,7 @@ using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Api.Models
 {
-    public class UpdateRequest
+    public class UpdateAuthorRequest
     {
         private string _password;
         private string _confirmPassword;

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +6,9 @@ using Microsoft.OpenApi.Models;
 using Yaroshinski.Blog.Api.Middleware;
 using Yaroshinski.Blog.Api.Services;
 using Yaroshinski.Blog.Application;
+using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Infrastructure;
+using IAuthorService = Yaroshinski.Blog.Api.Services.IAuthorService;
 
 namespace Yaroshinski.Blog.Api
 {
@@ -65,7 +66,7 @@ namespace Yaroshinski.Blog.Api
 
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
-            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAuthorService, AuthorService>();
             services.AddScoped<IEmailService, EmailService>();
         }
 

@@ -8,15 +8,15 @@ namespace Yaroshinski.Blog.Api
     {
         public MappingProfile()
         {
-            CreateMap<AuthorDto, AccountResponse>().ReverseMap();
+            CreateMap<AuthorDto, AuthorResponse>().ReverseMap();
 
             CreateMap<AuthorDto, AuthenticateResponse>().ReverseMap();
 
             CreateMap<RegisterRequest, AuthorDto>().ReverseMap();
 
-            CreateMap<CreateRequest, AuthorDto>().ReverseMap();
+            CreateMap<CreateAuthorRequest, AuthorDto>().ReverseMap();
 
-            CreateMap<UpdateRequest, AuthorDto>().ReverseMap();
+            CreateMap<UpdateAuthorRequest, AuthorDto>().ReverseMap();
         }
     }
 }

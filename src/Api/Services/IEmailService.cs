@@ -3,14 +3,10 @@ using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
+using Yaroshinski.Blog.Application.Interfaces;
 
 namespace Yaroshinski.Blog.Api.Services
 {
-    public interface IEmailService
-    {
-        void Send(string to, string subject, string html, string from = null);
-    }
-    
     public class EmailService : IEmailService
     {
         private readonly AppSettings _appSettings;

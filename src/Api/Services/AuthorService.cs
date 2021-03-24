@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Yaroshinski.Blog.Api.Models;
 using Yaroshinski.Blog.Application.DTO;
+using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Domain.Entities;
 using Yaroshinski.Blog.Domain.Exceptions;
 using Yaroshinski.Blog.Infrastructure.Persistence;
@@ -18,7 +19,7 @@ using Yaroshinski.Blog.Infrastructure.Persistence;
 namespace Yaroshinski.Blog.Api.Services
 {
     // TODO: move to application
-    public interface IAccountService
+    public interface IAuthorService
     {
         AuthenticateResponse Authenticate(AuthenticateRequest model, string ipAddress);
         AuthenticateResponse RefreshToken(string token, string ipAddress);
@@ -30,20 +31,20 @@ namespace Yaroshinski.Blog.Api.Services
 
         void ResetPassword(ResetPasswordRequest model);
         List<AuthorDto> GetAll();
-        AccountResponse GetById(int id);
-        AccountResponse Create(CreateRequest model);
-        AccountResponse Update(int id, UpdateRequest model);
+        AuthorResponse GetById(int id);
+        AuthorResponse Create(CreateAuthorRequest model);
+        AuthorResponse Update(int id, UpdateAuthorRequest model);
         void Delete(int id);
     }
 
-    public class AccountService : IAccountService
+    public class AuthorService : IAuthorService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly AppSettings _appSettings;
         private readonly IEmailService _emailService;
 
-        public AccountService(
+        public AuthorService(
             ApplicationDbContext context,
             IMapper mapper,
             IOptions<AppSettings> appSettings,
@@ -219,13 +220,13 @@ namespace Yaroshinski.Blog.Api.Services
             return _mapper.Map<List<AuthorDto>>(_context.Authors.ToList());
         }
 
-        public AccountResponse GetById(int id)
+        public AuthorResponse GetById(int id)
         {
             var account = GetAccount(id);
-            return _mapper.Map<AccountResponse>(account);
+            return _mapper.Map<AuthorResponse>(account);
         }
 
-        public AccountResponse Create(CreateRequest model)
+        public AuthorResponse Create(CreateAuthorRequest model)
         {
             // validate
             if (_context.Authors.Any(x => x.Email == model.Email))
@@ -243,10 +244,10 @@ namespace Yaroshinski.Blog.Api.Services
             _context.Authors.Add(account);
             _context.SaveChanges();
 
-            return _mapper.Map<AccountResponse>(account);
+            return _mapper.Map<AuthorResponse>(account);
         }
 
-        public AccountResponse Update(int id, UpdateRequest model)
+        public AuthorResponse Update(int id, UpdateAuthorRequest model)
         {
             var account = GetAccount(id);
 
@@ -264,7 +265,7 @@ namespace Yaroshinski.Blog.Api.Services
             _context.Authors.Update(account);
             _context.SaveChanges();
 
-            return _mapper.Map<AccountResponse>(account);
+            return _mapper.Map<AuthorResponse>(account);
         }
 
         public void Delete(int id)

@@ -3,7 +3,7 @@ using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Api.Models
 {
-    public class CreateRequest
+    public class CreateAuthorRequest
     {
         [Required]
         public string FirstName { get; set; }
