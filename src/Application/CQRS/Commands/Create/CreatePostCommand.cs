@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using MediatR;
-using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Application.Models;
 using Yaroshinski.Blog.Domain.Entities;

@@ -6,8 +6,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Yaroshinski.Blog.Application.Configuration;
 using Yaroshinski.Blog.Application.Interfaces;
-using Yaroshinski.Blog.Infrastructure.Services.Configuration;
 
 namespace Yaroshinski.Blog.Api.Middleware
 {

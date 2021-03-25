@@ -34,6 +34,7 @@ namespace Yaroshinski.Blog.Api.Middleware
                 {
                     AppException _ => (int)HttpStatusCode.BadRequest,
                     NotFoundException _ => (int)HttpStatusCode.NotFound,
+                    ExistingEmailException _ => (int)HttpStatusCode.BadRequest,
                     _ => ServerErrorCode()
                 };
 

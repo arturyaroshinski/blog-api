@@ -35,9 +35,5 @@ namespace Yaroshinski.Blog.Application.DTO
 
         public Role Role { get; set; }
         public bool IsVerified => Verified.HasValue || PasswordReset.HasValue;
-        // public bool OwnsToken(string token) 
-        // {
-        //     return this.RefreshTokens?.Find(x => x.Token == token) != null;
-        // }
     }
 }

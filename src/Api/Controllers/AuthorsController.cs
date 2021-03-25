@@ -1,11 +1,16 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
-using Yaroshinski.Blog.Api.Models;
+using System.Threading.Tasks;
+using MediatR;
 using Yaroshinski.Blog.Api.Filters;
+using Yaroshinski.Blog.Application.CQRS.Commands.Create;
+using Yaroshinski.Blog.Application.CQRS.Commands.Delete;
+using Yaroshinski.Blog.Application.CQRS.Commands.Update;
+using Yaroshinski.Blog.Application.CQRS.Queries.Get;
+using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Application.Interfaces;
+using Yaroshinski.Blog.Application.Models;
 using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Api.Controllers
@@ -14,144 +19,151 @@ namespace Yaroshinski.Blog.Api.Controllers
     [Route("api/[controller]")]
     public class AuthorsController : ControllerBase
     {
-        private readonly IAuthorService _authorService;
-        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
+        private readonly IAuthorizationService _authorizationService;
 
         public AuthorsController(
-            IAuthorService authorService,
-            IMapper mapper)
+            IMediator mediator,
+            IAuthorizationService authorizationService)
         {
-            _authorService = authorService;
-            _mapper = mapper;
+            _mediator = mediator;
+            _authorizationService = authorizationService;
         }
 
         [HttpPost("authenticate")]
-        public ActionResult<AuthenticateResponse> Authenticate(AuthenticateRequest model)
+        public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateCommand command)
         {
-            var response = _authorService.Authenticate(model, IpAddress());
+            var response = await _mediator.Send(command);
             SetTokenCookie(response.RefreshToken);
+            
             return Ok(response);
         }
 
         [HttpPost("refresh-token")]
-        public ActionResult<AuthenticateResponse> RefreshToken()
+        public async Task<ActionResult<AuthenticateResponse>> RefreshToken()
         {
             var refreshToken = Request.Cookies["refreshToken"];
-            var response = _authorService.RefreshToken(refreshToken, IpAddress());
+            
+            if (string.IsNullOrEmpty(refreshToken))
+                return BadRequest(new { message = "Token is required" });
+
+            var response = await _mediator.Send(new RefreshTokenCommand
+            {
+                Token = refreshToken,
+                IpAddress = IpAddress()
+            });
+            
             SetTokenCookie(response.RefreshToken);
             return Ok(response);
         }
 
         [Authorize]
         [HttpPost("revoke-token")]
-        public IActionResult RevokeToken(RevokeTokenRequest model)
+        public async Task<IActionResult> RevokeToken(RevokeTokenCommand command)
         {
             // accept token from request body or cookie
-            var token = model.Token ?? Request.Cookies["refreshToken"];
+            var token = command.Token ?? Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(token))
                 return BadRequest(new { message = "Token is required" });
 
             // users can revoke their own tokens and admins can revoke any tokens
-            if (// TODO: extract !Author.OwnsToken(token) &&
-                Author.Role != Role.Admin)
+            if (await _authorizationService.OwnsToken(token) && Author.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            _authorService.RevokeToken(token, IpAddress());
+            command.Token = token;
+            command.IpAddress = IpAddress();
+            await _mediator.Send(command);
+            
             return Ok(new { message = "Token revoked" });
         }
 
         [HttpPost("register")]
-        public IActionResult Register(RegisterRequest model)
+        public IActionResult Register(CreateAuthorCommand command)
         {
-            _authorService.Register(model, Request.Headers["origin"]);
+            _authorizationService.Register(command, Request.Headers["origin"]);
             return Ok(new { message = "Registration successful, please check your email for verification instructions" });
         }
 
         [HttpPost("verify-email")]
-        public IActionResult VerifyEmail(VerifyEmailRequest model)
+        public async Task<IActionResult> VerifyEmail(VerifyEmailCommand command)
         {
-            _authorService.VerifyEmail(model.Token);
+            await _mediator.Send(command);
             return Ok(new { message = "Verification successful, you can now login" });
         }
 
         [HttpPost("forgot-password")]
-        public IActionResult ForgotPassword(ForgotPasswordRequest model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
         {
-            _authorService.ForgotPassword(model, Request.Headers["origin"]);
+            await _authorizationService.ForgotPassword(command, Request.Headers["origin"]);
             return Ok(new { message = "Please check your email for password reset instructions" });
         }
 
         [HttpPost("validate-reset-token")]
-        public IActionResult ValidateResetToken(ValidateResetTokenRequest model)
+        public IActionResult ValidateResetToken(string token)
         {
-            _authorService.ValidateResetToken(model);
+            _authorizationService.ValidateResetToken(token);
             return Ok(new { message = "Token is valid" });
         }
 
         [HttpPost("reset-password")]
-        public IActionResult ResetPassword(ResetPasswordRequest model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
         {
-            _authorService.ResetPassword(model);
-            return Ok(new { message = "Password reset successful, you can now login" });
+            await _mediator.Send(command);
+            return NoContent();
         }
 
-        [Authorize(Role.Admin)]
-        [HttpGet]
-        public ActionResult<List<AuthorResponse>> GetAll()
-        {
-            var authors = _authorService.GetAll();
-            var response = _mapper.Map<List<AuthorResponse>>(authors);
-            
-            return Ok(response);
-        }
+        // [Authorize(Role.Admin)]
+        // [HttpGet]
+        // public async Task<ActionResult<List<AuthorDto>>> GetAll()
+        // {
+        //     var authors = _mediator.Send(new GetAuthorsQuery{});
+        //     
+        //     return Ok(response);
+        // }
 
         [Authorize]
         [HttpGet("{id:int}")]
-        public ActionResult<AuthorResponse> GetById(int id)
+        public async Task<ActionResult<AuthorDto>> GetById(int id)
         {
             // users can get their own author and admins can get any author
             if (id != Author.Id && Author.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            var author = _authorService.GetById(id);
+            var author = await _mediator.Send(new GetAuthorByIdQuery {Id = id});
             return Ok(author);
         }
 
         [Authorize(Role.Admin)]
         [HttpPost]
-        public ActionResult<AuthorResponse> Create(CreateAuthorRequest model)
+        public async Task<ActionResult<int>> Create(CreateAuthorCommand command)
         {
-            var author = _authorService.Create(model);
-            return Ok(author);
+            var response = await _mediator.Send(command);
+            return CreatedAtAction(nameof(Create), response);
         }
 
         [Authorize]
         [HttpPut("{id:int}")]
-        public ActionResult<AuthorResponse> Update(int id, UpdateAuthorRequest model)
+        public async Task<IActionResult> Update(int id, UpdateAuthorCommand command)
         {
             // users can update their own author and admins can update any author
             if (id != Author.Id && Author.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            // only admins can update role
-            if (Author.Role != Role.Admin)
-                model.Role = null;
-
-            var author = _authorService.Update(id, model);
-            return Ok(author);
+            await _mediator.Send(command);
+            return NoContent();
         }
 
         [Authorize]
         [HttpDelete("{id:int}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             // users can delete their own author and admins can delete any author
             if (id != Author.Id && Author.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
 
-            _authorService.Delete(id);
-            return Ok(new { message = "Author deleted successfully" });
+            await _mediator.Send(new DeleteAuthorCommand{Id = id});
+            return NoContent();
         }
 
         // helper methods

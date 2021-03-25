@@ -16,7 +16,7 @@ namespace Yaroshinski.Blog.Infrastructure
                     x => x.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
             
             services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
-            services.AddScoped<IAuthorService, AuthorService>();
+            services.AddTransient<IAuthorizationService, AuthorizationService>();
             services.AddScoped<IEmailService, EmailService>();
             
             return services;

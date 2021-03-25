@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Yaroshinski.Blog.Application.DTO;
+using Yaroshinski.Blog.Application.Models;
 using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Application.Mapper
@@ -13,6 +14,8 @@ namespace Yaroshinski.Blog.Application.Mapper
             CreateMap<Post, PostDto>().ReverseMap();
             CreateMap<Comment, CommentDto>().ReverseMap();
             CreateMap<Tag, TagDto>().ReverseMap();
+            
+            CreateMap<Author, AuthenticateResponse>().ReverseMap();
         }
     }
 }

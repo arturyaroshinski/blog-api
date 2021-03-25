@@ -3,8 +3,10 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using Yaroshinski.Blog.Application.DTO;
+using Yaroshinski.Blog.Application.Exceptions;
 using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Application.Models;
+using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Application.CQRS.Queries.Get
 {
@@ -30,12 +32,12 @@ namespace Yaroshinski.Blog.Application.CQRS.Queries.Get
 
             if (author == null)
             {
-                return Task.FromResult(Response.Fail<AuthorDto>($"Cannot find author with id: {request.Id}"));
+                throw new NotFoundException(nameof(Author), request.Id);
             }
 
             var authorDto = _mapper.Map<AuthorDto>(author);
 
-            return Task.FromResult(Response.Ok("Author was found succesfully", authorDto));
+            return Task.FromResult(Response.Ok("Author was found successfully", authorDto));
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Yaroshinski.Blog.Api.Controllers
             return await _mediator.Send(command);
         }
         
-        [HttpPost]
+        [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, UpdatePostCommand command)
         {
             if (id != command.Id)
@@ -50,7 +50,7 @@ namespace Yaroshinski.Blog.Api.Controllers
             return NoContent();
         }
         
-        [HttpPost]
+        [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id, DeletePostCommand command)
         {
             if (id != command.Id)

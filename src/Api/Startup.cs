@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.OpenApi.Models;
 using Yaroshinski.Blog.Api.Middleware;
 using Yaroshinski.Blog.Application;
+using Yaroshinski.Blog.Application.Configuration;
 using Yaroshinski.Blog.Infrastructure;
-using Yaroshinski.Blog.Infrastructure.Services.Configuration;
 
 namespace Yaroshinski.Blog.Api
 {

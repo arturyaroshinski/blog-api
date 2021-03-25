@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace Yaroshinski.Blog.Api.Models
+namespace Yaroshinski.Blog.Application.Models
 {
     public class AuthenticateResponse
     {
