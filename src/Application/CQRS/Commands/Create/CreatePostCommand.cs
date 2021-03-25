@@ -12,7 +12,11 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
 {
     public abstract class CreatePostCommand : IRequest<Response<int>>
     {
-        public PostDto Model { get; set; }
+        public string Title { get; set; }
+
+        public string Text { get; set; }
+
+        public int AuthorId { get; set; }
     }
 
     public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, Response<int>>
@@ -30,7 +34,14 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
         {
             request = request ?? throw new ArgumentNullException(nameof(request));
 
-            var newPost = _mapper.Map<Post>(request.Model);
+            var newPost = new Post
+            {
+                AuthorId = request.AuthorId,
+                Title = request.Title,
+                Text = request.Text,
+                CreatedAt = DateTime.UtcNow
+            };
+
             try
             {
                 await _context.Posts.AddAsync(newPost, cancellationToken);

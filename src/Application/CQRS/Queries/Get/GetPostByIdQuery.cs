@@ -3,6 +3,7 @@ using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using Yaroshinski.Blog.Application.DTO;
+using Yaroshinski.Blog.Application.Exceptions;
 using Yaroshinski.Blog.Application.Interfaces;
 using Yaroshinski.Blog.Application.Models;
 
@@ -30,12 +31,12 @@ namespace Yaroshinski.Blog.Application.CQRS.Queries.Get
 
             if (Post == null)
             {
-                return Task.FromResult(Response.Fail<PostDto>($"Cannot find Post with id: {request.Id}"));
+                throw new NotFoundException(nameof(Post), request.Id);
             }
 
             var PostDto = _mapper.Map<PostDto>(Post);
 
-            return Task.FromResult(Response.Ok("Post was found succesfully", PostDto));
+            return Task.FromResult(Response.Ok("Post was found successful", PostDto));
         }
     }
 }

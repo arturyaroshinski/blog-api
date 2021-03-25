@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Yaroshinski.Blog.Application.Exceptions;
 using Yaroshinski.Blog.Domain.Exceptions;
 
 namespace Yaroshinski.Blog.Api.Middleware
@@ -11,6 +12,7 @@ namespace Yaroshinski.Blog.Api.Middleware
     public class ErrorHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private bool _isServerError;
 
         public ErrorHandlerMiddleware(RequestDelegate next)
         {
@@ -30,15 +32,24 @@ namespace Yaroshinski.Blog.Api.Middleware
 
                 response.StatusCode = error switch
                 {
-                    AppException e => (int)HttpStatusCode.BadRequest,
-                    KeyNotFoundException e => (int)HttpStatusCode.NotFound,
-                    // TODO: hide server error msg in response
-                    _ => (int) HttpStatusCode.InternalServerError
+                    AppException _ => (int)HttpStatusCode.BadRequest,
+                    NotFoundException _ => (int)HttpStatusCode.NotFound,
+                    _ => ServerErrorCode()
                 };
 
-                var result = JsonSerializer.Serialize(new { message = error?.Message });
+                var result = JsonSerializer.Serialize(new
+                {
+                    message = _isServerError ? "Server error" : error.Message
+                });
                 await response.WriteAsync(result);
             }
+        }
+
+        private int ServerErrorCode()
+        {
+            _isServerError = false;
+            
+            return (int) HttpStatusCode.InternalServerError;
         }
     }
 }
