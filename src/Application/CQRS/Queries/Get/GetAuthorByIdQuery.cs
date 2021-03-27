@@ -5,17 +5,16 @@ using System.Threading.Tasks;
 using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Application.Exceptions;
 using Yaroshinski.Blog.Application.Interfaces;
-using Yaroshinski.Blog.Application.Models;
 using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Application.CQRS.Queries.Get
 {
-    public class GetAuthorByIdQuery : IRequest<Response<AuthorDto>>
+    public class GetAuthorByIdQuery : IRequest<AuthorDto>
     {
         public int Id { get; set; }
     }
 
-    public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, Response<AuthorDto>>
+    public class GetAuthorByIdQueryHandler : IRequestHandler<GetAuthorByIdQuery, AuthorDto>
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -26,7 +25,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Queries.Get
             _mapper = mapper ?? throw new System.ArgumentNullException(nameof(mapper));
         }
 
-        public Task<Response<AuthorDto>> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
+        public Task<AuthorDto> Handle(GetAuthorByIdQuery request, CancellationToken cancellationToken)
         {
             var author = _context.Authors.Find(request.Id);
 
@@ -37,7 +36,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Queries.Get
 
             var authorDto = _mapper.Map<AuthorDto>(author);
 
-            return Task.FromResult(Response.Ok("Author was found successfully", authorDto));
+            return Task.FromResult(authorDto);
         }
     }
 }

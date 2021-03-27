@@ -47,6 +47,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Update
             author.PasswordReset = DateTime.UtcNow;
             author.ResetToken = null;
             author.ResetTokenExpires = null;
+            author.Updated = DateTime.UtcNow;
             
             _context.Authors.Update(author);
             await _context.SaveChangesAsync(cancellationToken);

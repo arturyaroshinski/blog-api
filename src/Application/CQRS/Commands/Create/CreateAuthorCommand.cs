@@ -7,23 +7,18 @@ using AutoMapper;
 using MediatR;
 using Yaroshinski.Blog.Application.Exceptions;
 using Yaroshinski.Blog.Application.Interfaces;
-using Yaroshinski.Blog.Application.Models;
 using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
 {
-    public class CreateAuthorCommand : IRequest<Response<int>>
+    public class CreateAuthorCommand : IRequest<int>
     {
         [Required] 
         public string FirstName { get; set; }
 
         [Required]
         public string LastName { get; set; }
-
-        [Required]
-        [EnumDataType(typeof(Role))]
-        public string Role { get; set; }
-
+        
         [Required]
         [EmailAddress] 
         public string Email { get; set; }
@@ -37,7 +32,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
         public string ConfirmPassword { get; set; }
     }
 
-    public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, Response<int>>
+    public class CreateAuthorCommandHandler : IRequestHandler<CreateAuthorCommand, int>
     {
         private readonly IAuthorizationService _authService;
         private readonly IApplicationDbContext _context;
@@ -53,7 +48,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
             _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
-        public async Task<Response<int>> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(CreateAuthorCommand request, CancellationToken cancellationToken)
         {
             request = request ?? throw new ArgumentNullException(nameof(request));
             
@@ -74,12 +69,12 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
                 await _context.Authors.AddAsync(newAuthor, cancellationToken);
                 await _context.SaveChangesAsync(cancellationToken);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return Response.Fail(ex.Message, -1);
+                return -1;
             }
 
-            return Response.Ok("Author was successfully created", newAuthor.Id);
+            return newAuthor.Id;
         }
     }
 }
