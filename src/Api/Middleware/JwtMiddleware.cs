@@ -6,8 +6,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.Extensions.DependencyInjection;
 using Yaroshinski.Blog.Application.Configuration;
-using Yaroshinski.Blog.Application.Interfaces;
+using Yaroshinski.Blog.Application.CQRS.Queries.Get;
 
 namespace Yaroshinski.Blog.Api.Middleware
 {
@@ -16,23 +18,24 @@ namespace Yaroshinski.Blog.Api.Middleware
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
+        public JwtMiddleware(RequestDelegate next,
+            IOptions<AppSettings> appSettings)
         {
             _next = next;
             _appSettings = appSettings.Value;
         }
 
-        public async Task Invoke(HttpContext context, IApplicationDbContext dataContext)
+        public async Task Invoke(HttpContext context)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                await AttachAccountToContext(context, dataContext, token);
+                await AttachAccountToContext(context, token);
 
             await _next(context);
         }
 
-        private async Task AttachAccountToContext(HttpContext context, IApplicationDbContext dataContext, string token)
+        private async Task AttachAccountToContext(HttpContext context, string token)
         {
             try
             {
@@ -46,12 +49,15 @@ namespace Yaroshinski.Blog.Api.Middleware
                     ValidateIssuer = false,
                     ValidateAudience = false,
                     ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
+                }, out var validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
-                var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var id = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
-                context.Items["Account"] = await dataContext.Authors.FindAsync(accountId);
+                var mediator = (IMediator)context.RequestServices.GetRequiredService(typeof(IMediator));
+                
+                var author = await mediator.Send(new GetAuthorByIdQuery {Id = id});
+                context.Items["Author"] = author;
             }
             catch 
             {

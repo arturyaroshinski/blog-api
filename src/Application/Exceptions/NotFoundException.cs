@@ -13,7 +13,7 @@ namespace Yaroshinski.Blog.Application.Exceptions
             : base(message, innerException) { }
 
         public NotFoundException(string name, object key)
-            : base($"Entity \"{name}\" ({key}) was not found.")
+            : base($"'{name}' with '{key}' was not found.")
         {
         }
     }

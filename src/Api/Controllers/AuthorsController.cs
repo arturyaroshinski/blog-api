@@ -17,7 +17,7 @@ namespace Yaroshinski.Blog.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthorsController : ControllerBase
+    public class AuthorsController : BaseController
     {
         private readonly IMediator _mediator;
         private readonly IAuthorizationService _authorizationService;
@@ -79,9 +79,9 @@ namespace Yaroshinski.Blog.Api.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register(CreateAuthorCommand command)
+        public async Task<IActionResult> Register(CreateAuthorCommand command)
         {
-            _authorizationService.Register(command, Request.Headers["origin"]);
+            await _mediator.Send(command);
             return Ok(new { message = "Registration successful, please check your email for verification instructions" });
         }
 
@@ -95,14 +95,14 @@ namespace Yaroshinski.Blog.Api.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
         {
-            await _authorizationService.ForgotPassword(command, Request.Headers["origin"]);
+            await _mediator.Send(command);
             return Ok(new { message = "Please check your email for password reset instructions" });
         }
 
         [HttpPost("validate-reset-token")]
-        public IActionResult ValidateResetToken(string token)
+        public async Task<IActionResult> ValidateResetToken(string token)
         {
-            _authorizationService.ValidateResetToken(token);
+            await _mediator.Send(new ValidateResetTokenQuery {Token = token});
             return Ok(new { message = "Token is valid" });
         }
 
@@ -113,7 +113,6 @@ namespace Yaroshinski.Blog.Api.Controllers
             return NoContent();
         }
 
-        // [Authorize(Role.Admin)]
         // [HttpGet]
         // public async Task<ActionResult<List<AuthorDto>>> GetAll()
         // {
@@ -122,14 +121,9 @@ namespace Yaroshinski.Blog.Api.Controllers
         //     return Ok(response);
         // }
 
-        [Authorize]
         [HttpGet("{id:int}")]
         public async Task<ActionResult<AuthorDto>> GetById(int id)
         {
-            // users can get their own author and admins can get any author
-            if (id != Author.Id && Author.Role != Role.Admin)
-                return Unauthorized(new { message = "Unauthorized" });
-
             var author = await _mediator.Send(new GetAuthorByIdQuery {Id = id});
             return Ok(author);
         }
@@ -158,6 +152,7 @@ namespace Yaroshinski.Blog.Api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+        
             // users can delete their own author and admins can delete any author
             if (id != Author.Id && Author.Role != Role.Admin)
                 return Unauthorized(new { message = "Unauthorized" });
@@ -178,8 +173,6 @@ namespace Yaroshinski.Blog.Api.Controllers
             Response.Cookies.Append("refreshToken", token, cookieOptions);
         }
 
-        private Author Author => (Author)HttpContext.Items["Author"];
-        
         private string IpAddress()
         {
             if (Request.Headers.ContainsKey("X-Forwarded-For"))

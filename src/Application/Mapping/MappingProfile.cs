@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using Yaroshinski.Blog.Application.CQRS.Commands.Create;
 using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Application.Models;
 using Yaroshinski.Blog.Domain.Entities;
 
-namespace Yaroshinski.Blog.Application.Mapper
+namespace Yaroshinski.Blog.Application.Mapping
 {
     public class MappingProfile : Profile
     {
@@ -16,6 +17,7 @@ namespace Yaroshinski.Blog.Application.Mapper
             CreateMap<Tag, TagDto>().ReverseMap();
             
             CreateMap<Author, AuthenticateResponse>().ReverseMap();
+            CreateMap<Author, CreateAuthorCommand>().ReverseMap();
         }
     }
 }

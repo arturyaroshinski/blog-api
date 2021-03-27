@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -18,6 +19,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Update
 
         [Required] public string Password { get; set; }
 
+        [JsonIgnore]
         public string IpAddress { get; set; }
     }
 

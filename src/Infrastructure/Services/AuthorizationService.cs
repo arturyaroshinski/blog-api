@@ -41,31 +41,6 @@ namespace Yaroshinski.Blog.Infrastructure.Services
             _mediator = mediator;
         }
 
-        public async Task Register(CreateAuthorCommand command, string origin)
-        {
-            await _mediator.Send(command);
-            // TODO: send mail
-            // SendVerificationEmail(account, origin);
-        }
-
-        public async Task ForgotPassword(ForgotPasswordCommand command, string origin)
-        {
-            await _mediator.Send(command);
-
-            var author = await _mediator.Send(new GetAuthorByEmailQuery
-            {
-                Email = command.Email
-            });
-            
-            // TODO: send email
-            // SendPasswordResetEmail(author, origin);
-        }
-
-        public async Task ValidateResetToken(string token)
-        {
-            await _mediator.Send(new ValidateResetTokenQuery {Token = token});
-        }
-
         private async Task<RefreshTokenDto> GetRefreshToken(string token)
         {
             var query = new GetAuthorByPredicateQuery

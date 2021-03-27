@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Domain.Entities;
 
 namespace Yaroshinski.Blog.Api.Filters
@@ -20,8 +21,8 @@ namespace Yaroshinski.Blog.Api.Filters
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            var account = (Author) context.HttpContext.Items["Account"];
-            if (account == null || _roles.Any() && !_roles.Contains(account.Role))
+            var author = (AuthorDto) context.HttpContext.Items["Author"];
+            if (author == null || _roles.Any() && !_roles.Contains(author.Role))
             {
                 // not logged in or role not authorized
                 context.Result = new JsonResult(new {message = "Unauthorized"})
