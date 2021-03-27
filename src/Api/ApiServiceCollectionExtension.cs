@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Yaroshinski.Blog.Api.Filters;
 
 namespace Yaroshinski.Blog.Api
 {
@@ -45,7 +46,11 @@ namespace Yaroshinski.Blog.Api
                 c.AddSecurityRequirement(securityRequirements);
             });
 
-            services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ValidateModelAttribute());
+            }).AddJsonOptions(x => x.JsonSerializerOptions.IgnoreNullValues = true);
+            
             services.AddRouting(options => options.LowercaseUrls = true);
 
             return services;
