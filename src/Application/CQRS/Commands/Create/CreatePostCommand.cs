@@ -18,7 +18,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
         public string Text { get; set; }
 
         [JsonIgnore] 
-        public int UserId { get; set; }
+        public int AuthorId { get; set; }
     }
 
     public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, int>
@@ -36,7 +36,7 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
 
             var newPost = new Post
             {
-                AuthorId = request.UserId,
+                AuthorId = request.AuthorId,
                 Title = request.Title,
                 Text = request.Text,
                 CreatedAt = DateTime.UtcNow

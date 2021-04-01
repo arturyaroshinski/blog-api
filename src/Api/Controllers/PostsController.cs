@@ -39,7 +39,7 @@ namespace Yaroshinski.Blog.Api.Controllers
         [Authorize]
         public async Task<ActionResult<int>> Create(CreatePostCommand command)
         {
-            command.UserId = Author.Id;
+            command.AuthorId = Author.Id;
             return await _mediator.Send(command);
         }
         

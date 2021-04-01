@@ -12,6 +12,8 @@ using Yaroshinski.Blog.Application.DTO;
 
 namespace Yaroshinski.Blog.Api.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class CommentsController : BaseController
     {
         private readonly IMediator _mediator;

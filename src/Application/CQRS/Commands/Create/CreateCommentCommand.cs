@@ -25,7 +25,6 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Create
     public class CreateCommentCommandHandler : IRequestHandler<CreateCommentCommand, int>
     {
         private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
 
         public CreateCommentCommandHandler(IApplicationDbContext context)
         {
