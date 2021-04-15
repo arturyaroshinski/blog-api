@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -12,6 +13,8 @@ namespace Yaroshinski.Blog.Application.CQRS.Commands.Update
     public class RevokeTokenCommand : IRequest
     {
         public string Token { get; set; }
+
+        [JsonIgnore]
         public string IpAddress { get; set; }
     }
     

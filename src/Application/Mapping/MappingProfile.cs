@@ -18,6 +18,9 @@ namespace Yaroshinski.Blog.Application.Mapping
             
             CreateMap<Author, AuthenticateResponse>().ReverseMap();
             CreateMap<Author, CreateAuthorCommand>().ReverseMap();
+            CreateMap<AuthorDto, AuthorResponse>()
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => src.Role.ToString()))
+                .ReverseMap();
         }
     }
 }

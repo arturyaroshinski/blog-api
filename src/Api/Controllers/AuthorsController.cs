@@ -6,8 +6,9 @@ using Yaroshinski.Blog.Application.CQRS.Commands.Create;
 using Yaroshinski.Blog.Application.CQRS.Commands.Delete;
 using Yaroshinski.Blog.Application.CQRS.Commands.Update;
 using Yaroshinski.Blog.Application.CQRS.Queries.Get;
-using Yaroshinski.Blog.Application.DTO;
 using Yaroshinski.Blog.Domain.Entities;
+using Yaroshinski.Blog.Application.Models;
+using AutoMapper;
 
 namespace Yaroshinski.Blog.Api.Controllers
 {
@@ -16,10 +17,12 @@ namespace Yaroshinski.Blog.Api.Controllers
     public class AuthorsController : BaseController
     {
         private readonly IMediator _mediator;
+        private readonly IMapper _mapper;
 
-        public AuthorsController(IMediator mediator)
+        public AuthorsController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         // [HttpGet]
@@ -31,10 +34,12 @@ namespace Yaroshinski.Blog.Api.Controllers
         // }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<AuthorDto>> GetById(int id)
+        public async Task<ActionResult<AuthorResponse>> GetById(int id)
         {
-            var author = await _mediator.Send(new GetAuthorByIdQuery {Id = id});
-            return Ok(author);
+            var authorDto = await _mediator.Send(new GetAuthorByIdQuery {Id = id});
+            var authorResponse = _mapper.Map<AuthorResponse>(authorDto);
+
+            return Ok(authorResponse);
         }
 
         [Authorize(Role.Admin)]
